@@ -11,6 +11,6 @@ dependencies
 usage
 -----
 
-`getverse [-f <format>] [-t <translation>] [<reference>]`
+`getverse [-f <format>] [-t <translation>] [-r] [<reference>]`
 
 

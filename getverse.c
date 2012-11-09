@@ -1,11 +1,10 @@
 
-#include <cstdbool>
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
-#include <sword/swfiltermgr.h>
-#include <sword/swmgr.h>
-#include <sword/swmodule.h>
+#include <stdlib.h>
+
+#include "swordwrapper.h"
 
 //Estimated length of reference input from stdin
 // II Thessalonians 10:11-12
@@ -17,14 +16,15 @@
 char * translation = 0x0;
 char * format = 0x0;
 char * reference = 0x0;
-bool red = false;
+int red = 0;
 
 void setReference( int count, char ** words ) {
     int size = 0;
+    reference = (char*)calloc(1, strlen(words[0]));
     for( int i = 0; i < count; i++ ) {
-        size += strlen(words[i]);
-        reference = realloc(reference, size);
-        reference = strcat(refernce, words[i]);
+        size += strlen(words[i]+1);
+        reference = (char*)realloc(reference, size);
+        reference = strcat(strcat(reference, " "), words[i]);
     }
 }
 
@@ -32,18 +32,18 @@ void readReference() {
     int size = 0;
      do {
          size += REF_LENGTH;
-         reference = realloc(reference, size);
+         reference = (char*)realloc(reference, size);
      } while (!fgets(reference, size, stdin));
 }
 
 
-int void main(int argc, const char ** argv) {
+int main(int argc, char ** argv) {
 
     //Parse arguments
     for( int i = 1; i < argc; i++ ) {
         //Not an option, must be start of reference
-        if( arg[0] != '-' ) {
-            setReference( argc - 1, argv + i );
+        if( argv[i][0] != '-' ) {
+            setReference( argc - i, argv + i );
             break;
         }
 
@@ -55,7 +55,7 @@ int void main(int argc, const char ** argv) {
                 translation = argv[++i];
                 break;
             case 'r':
-                red = true;
+                red = 1;
                 break;
             case 'h':
             case '?':
@@ -74,13 +74,9 @@ int void main(int argc, const char ** argv) {
         readReference();
     }
 
-    SWMgr * manager = new SWMgr(new SWFilterMgr());
-    //TODO: don't assume translation was given
-    SWModule * module = manager->getModule(translation);
-    SWKey * key = new SWKey(reference);
-    module->setKey(key);
-    char * verse = module->StripText();
-    printf("%s\n", verse);
+    Passage result = getPassage(translation, reference, 0);
 
+    printf("%s\n", result.text);
+    deletePassage(result);
 
 }
