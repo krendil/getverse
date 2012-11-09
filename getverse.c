@@ -76,9 +76,30 @@ int main(int argc, char ** argv) {
         readReference();
     }
 
-    Passage result = getPassage(translation, reference, 0);
-
-    printf("%s\n", result.text);
-    deletePassage(result);
+    Passage result;
+    int err = getPassage(&result, translation, reference, 0);
+    switch(err) {
+        case MODULE_NOT_FOUND:
+            fprintf(stderr, "Could not find translation '%s'. Are you sure it is installed?\n",
+                    translation);
+            exit(EXIT_FAILURE); break;
+        case BOOK_NOT_FOUND:
+            fprintf(stderr, "That reference does not exist.\n");
+            exit(EXIT_FAILURE); break;
+        case CHAPTER_NOT_FOUND:
+            fprintf(stderr, "That book doesn't have that many chapters.\n");
+            exit(EXIT_FAILURE); break;
+        case VERSE_NOT_FOUND:
+            fprintf(stderr, "That chapter doesn't have that many verses.\n");
+            exit(EXIT_FAILURE); break;
+        case 0:
+            printf("%s\n", result.text);
+            deletePassage(result);
+            exit(EXIT_SUCCESS); break;
+        default:
+            fprintf(stderr, "Something when wrong. Not quit sure what.");
+            exit(EXIT_FAILURE);
+    }
+    //Wheee! dead code zone!
 
 }
