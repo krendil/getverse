@@ -47,16 +47,16 @@ char * readReference() {
 
 int main(int argc, char ** argv) {
 
-    char * translation = 0x0;
-    char * format = 0x0;
-    char * reference = 0x0;
+    char * translation = NULL;
+    char * format = NULL;
+    char * reference = NULL;
     int red = 0;
 
     //Parse arguments
     for( int i = 1; i < argc; i++ ) {
         //Not an option, must be start of reference
         if( argv[i][0] != '-' ) {
-            setReference( argc - i, argv + i );
+            reference = setReference( argc - i, argv + i );
             break;
         }
 
@@ -89,7 +89,7 @@ int main(int argc, char ** argv) {
 
     //See if we need to get the reference from stdin
     if( reference == NULL ) {
-        readReference();
+        reference = readReference();
     }
 
     Passage result;
