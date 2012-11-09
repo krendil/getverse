@@ -85,14 +85,16 @@ Passage initPassage(const char * reference, const char * translation) {
     strcpy(passage.reference, reference);
     passage.translation = (char*) malloc(strlen(translation));
     strcpy(passage.translation, translation);
-    passage.text = 0x0;
+    passage.text = NULL;
     return passage;
 }
 
 void deletePassage(Passage p) {
     free(p.reference);
     free(p.translation);
-    free(p.text);
+    if(p.text) {
+        free(p.text);
+    }
 }
 
 

@@ -22,11 +22,32 @@ typedef struct {
 extern "C" {
 #endif
 
+/**
+ * Sets up an empty Passage with the given reference and translation strings. Text is set to NULL
+ *
+ */
 Passage initPassage( const char* reference, const char * translation );
+
+/**
+ * Frees the pointers in the given passage.
+ *
+ */
 void deletePassage(Passage passage);
 
+/**
+ * An empty (uninitialised) passage with the given reference, translation and passage text.
+ *
+ * passage: The Passage to fill
+ * translation: the SWORD module from which to get the text
+ * reference: the BOOK CH:VS style reference to retrieve
+ * flags: various flags to affect the process, currently unimplemented
+ * return: 0 on success, or an error code, as defined above
+ */
 int getPassage( Passage * passage, const char * translation, const char * reference, unsigned int flags);
 
+/**
+ * Currently unimplemented, but will eventually allow formatting of passage info in a string
+ */
 char * formatPassage( const char* format, Passage * passage );
 
 #ifdef __cplusplus

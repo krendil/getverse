@@ -13,14 +13,17 @@
 #define REF_LENGTH 32
 
 //const char * usage = "Usage: getvers
-char * translation = 0x0;
-char * format = 0x0;
-char * reference = 0x0;
-int red = 0;
 
-void setReference( int count, char ** words ) {
+void printUsage() {
+    printf(\
+            "Usage: getverse -t <translation> [<reference>]\n"\
+            "\n"\
+            "If no reference is supplied, getverse tries to read from stdin.\n");
+}
+
+char * setReference( int count, char ** words ) {
     int size = 0;
-    reference = (char*)calloc(1, strlen(words[0]));
+    char * reference = (char*)calloc(1, strlen(words[0]));
     reference = strcat(reference, words[0]);
 
     for( int i = 1; i < count; i++ ) {
@@ -28,18 +31,26 @@ void setReference( int count, char ** words ) {
         reference = (char*)realloc(reference, size);
         reference = strcat(strcat(reference, " "), words[i]);
     }
+    return reference;
 }
 
-void readReference() {
+char * readReference() {
     int size = 0;
-     do {
+    char * reference = NULL;
+    do {
          size += REF_LENGTH;
          reference = (char*)realloc(reference, size);
      } while (!fgets(reference, size, stdin));
+     return reference;
 }
 
 
 int main(int argc, char ** argv) {
+
+    char * translation = 0x0;
+    char * format = 0x0;
+    char * reference = 0x0;
+    int red = 0;
 
     //Parse arguments
     for( int i = 1; i < argc; i++ ) {
@@ -69,6 +80,11 @@ int main(int argc, char ** argv) {
                 exit(EXIT_FAILURE);
                 break;
         }
+    }
+
+    if(translation == NULL ) {
+        fprintf(stderr, "Please specify a translation with the -t option\n");
+        exit(EXIT_FAILURE);
     }
 
     //See if we need to get the reference from stdin

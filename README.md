@@ -11,6 +11,8 @@ dependencies
 usage
 -----
 
-`getverse [-f <format>] [-t <translation>] [-r] [<reference>]`
+`getverse -t <translation> [<reference>]`
+
+If no reference is supplied on the command line, getverse will try to read one from stdin.
 
 
