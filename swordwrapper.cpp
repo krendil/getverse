@@ -24,17 +24,17 @@ int getPassage( Passage * passage, const char* translation, const char * referen
     //Turn the key into a set of list
     VerseKey * key = new VerseKey();
     key->setText(reference, false); //Currently SWORD normalises anyway
-    if( (key->getBook() >= key->getBookMax()) || (key->getBook() < 0) ) {
+    if( (key->getBook() > key->getBookMax()) || (key->getBook() < 0) ) {
         delete manager;
         return BOOK_NOT_FOUND;
     }
     //Currently, these have no effect, but here's to hoping SWORD will fix their
     //versekey normalisation issues
-    if( key->getChapter() >= key->getChapterMax() || key->getChapter() < 0 ) {
+    if( key->getChapter() > key->getChapterMax() || key->getChapter() < 0 ) {
         delete manager;
         return CHAPTER_NOT_FOUND;
     }
-    if( key->getVerse() >= key->getVerseMax() || key->getVerse() < 0 ) {
+    if( key->getVerse() > key->getVerseMax() || key->getVerse() < 0 ) {
         delete manager;
         return VERSE_NOT_FOUND;
     }

@@ -100,7 +100,7 @@ int main(int argc, char ** argv) {
                     translation);
             exit(EXIT_FAILURE); break;
         case BOOK_NOT_FOUND:
-            fprintf(stderr, "That reference does not exist.\n");
+            fprintf(stderr, "That book does not exist.\n");
             exit(EXIT_FAILURE); break;
         case CHAPTER_NOT_FOUND:
             fprintf(stderr, "That book doesn't have that many chapters.\n");
