@@ -21,7 +21,9 @@ int red = 0;
 void setReference( int count, char ** words ) {
     int size = 0;
     reference = (char*)calloc(1, strlen(words[0]));
-    for( int i = 0; i < count; i++ ) {
+    reference = strcat(reference, words[0]);
+
+    for( int i = 1; i < count; i++ ) {
         size += strlen(words[i]+1);
         reference = (char*)realloc(reference, size);
         reference = strcat(strcat(reference, " "), words[i]);

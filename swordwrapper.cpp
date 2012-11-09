@@ -6,6 +6,8 @@
 #include <versekey.h>
 #include <listkey.h>
 
+#include <regex.h>
+
 using namespace sword;
 
 Passage getPassage( const char* translation, const char * reference, unsigned int flags) {
@@ -16,24 +18,44 @@ Passage getPassage( const char* translation, const char * reference, unsigned in
     //Turn the key into a set of list
     VerseKey * key = new VerseKey(reference);
 
-    ListKey list = key->ParseVerseList(reference);
+    ListKey list = key->ParseVerseList(reference, 0, true, true);
+    module->setKey(list);
 
     Passage passage = initPassage(reference, translation);
 
     //Get each verse
     passage.text = (char*)calloc(1, 1);
     int size = 0;
-    /*int count = list.Count();
-    for(int i = 0; i < list.Count(); i++) {
-        SWKey * key = list.getElement(i);
-        //Build the passage*/
-    for(list = TOP; !list.Error(); list++) {
-        module->setKey(list);
+
+    //Get ready to remove brackets
+    regex_t bracketMatch;
+    int err = regcomp(&bracketMatch, " \\[\\] ", 0);
+
+    for(list = TOP; !list.Error(); module->setKey(++list)) {
         const char * verse = module->StripText();
-        size += strlen(verse);
+        size += strlen(verse) + 1;
         passage.text = (char*)realloc(passage.text, size);
-        strcat(passage.text, verse);
+
+        regmatch_t match[1];
+        int start = 0;
+        for(;;) {
+            err = regexec(&bracketMatch, verse + start, 1, match, 0);
+            if(err == REG_NOMATCH) {
+                strcat(passage.text, verse + start);
+                strcat(passage.text, " ");
+                break;
+            }
+
+            // Match found.  Copy the bit before the match, and skip to the end
+            strncat(passage.text, verse + start, match[0].rm_so);
+            start += match[0].rm_eo;
+        }
     }
+
+    delete key;
+    delete module;
+    delete manager;
+    regfree(&bracketMatch);
 
     return passage;
 }
