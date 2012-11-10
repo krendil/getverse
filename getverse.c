@@ -1,4 +1,8 @@
-
+/**
+ * Copyright (c) 2012 David Osborne
+ * getsource is licensed under the MIT License,
+ * http://opensource.org/licenses/MIT
+ */
 #include <stdio.h>
 #include <string.h>
 

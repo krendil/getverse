@@ -7,6 +7,12 @@
 #include <listkey.h>
 
 #include <ctype.h>
+/**
+ * Copyright (c) 2012 David Osborne
+ * getsource is licensed under the MIT License,
+ * http://opensource.org/licenses/MIT
+ */
+
 #include <regex.h>
 
 using namespace sword;

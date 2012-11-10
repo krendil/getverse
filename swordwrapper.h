@@ -1,7 +1,11 @@
+/**
+ * Copyright (c) 2012 David Osborne
+ * getsource is licensed under the MIT License,
+ * http://opensource.org/licenses/MIT
+ */
+
 #ifndef SWORDWRAPPER_H
 #define SWORDWRAPPER_H
-
-#define RED_LETTER (1 >> 0)
 
 //Note that it is very tricky to tell if a chapter:verse exists in sword,
 //since it goes on to the next book if the chapter is too high
