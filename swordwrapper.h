@@ -46,7 +46,16 @@ void deletePassage(Passage passage);
 int getPassage( Passage * passage, const char * translation, const char * reference, unsigned int flags);
 
 /**
- * Currently unimplemented, but will eventually allow formatting of passage info in a string
+ * Formats the info in the passage into a given buffer, according to the format string.
+ *
+ * format: A format specifier string, containing zero or more of the following variables
+ *          %p: Will be expanded into the passage text
+ *          %t: Will be expanded into the translation name
+ *          %r: Will be expanded into the passage reference
+ *          %%: A literal % character
+ * passage: The passage containing information to be formatted
+ * return: A dynamically allocated string containing the formatted data, or NULL, if there
+ *          was an error (probably an unknown variable);
  */
 char * formatPassage( const char* format, Passage * passage );
 

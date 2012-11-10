@@ -6,9 +6,23 @@
 #include <versekey.h>
 #include <listkey.h>
 
+#include <ctype.h>
 #include <regex.h>
 
 using namespace sword;
+
+static char * trimWhitespace(char * in) {
+    int start = -1;
+    while( isspace(in[++start]) );
+    int end = strlen(in);
+    while ( isspace(in[--end]) );
+    int size = end - start + 2;
+    char * result = (char *) malloc(size);
+    memcpy(result, in + start, size);
+    result[size] = 0x0;
+    free(in);
+    return result;
+}
 
 int getPassage( Passage * passage, const char* translation, const char * reference, unsigned int flags) {
 
@@ -24,12 +38,6 @@ int getPassage( Passage * passage, const char* translation, const char * referen
     //Turn the key into a set of list
     VerseKey * key = new VerseKey();
     key->setText(reference, false); //Currently SWORD normalises anyway
-    if( (key->getBook() > key->getBookMax()) || (key->getBook() < 0) ) {
-        delete manager;
-        return BOOK_NOT_FOUND;
-    }
-    //Currently, these have no effect, but here's to hoping SWORD will fix their
-    //versekey normalisation issues
     if( key->getChapter() > key->getChapterMax() || key->getChapter() < 0 ) {
         delete manager;
         return CHAPTER_NOT_FOUND;
@@ -42,6 +50,10 @@ int getPassage( Passage * passage, const char* translation, const char * referen
     ListKey list = key->ParseVerseList(reference, 0, true, true);
     module->setKey(list);
 
+    if( list.Count() == 0 ) {
+        delete manager;
+        return BOOK_NOT_FOUND;
+    }
 
     *passage = initPassage(reference, translation);
     //Get each verse
@@ -76,6 +88,8 @@ int getPassage( Passage * passage, const char* translation, const char * referen
     delete manager;
     regfree(&bracketMatch);
 
+    passage->text = trimWhitespace(passage->text);
+
     return 0;
 }
 
@@ -97,4 +111,44 @@ void deletePassage(Passage p) {
     }
 }
 
+char * formatPassage( const char* format, Passage * passage ) {
+    char * result = NULL;
+    const char * var = NULL;
+    int fi, ri, offset, size;
+    fi = ri = 0;
+    size = 1; //Null terminator
+    while( fi < size ) {
+        offset = strcspn( format + fi, "%" );
+        result = (char*)realloc(result, size += offset);
+        strncpy( result + ri, format + fi, offset);
+        ri += offset;
+        fi += offset;
 
+        if( !format[fi] ) {
+            break;
+        }
+        switch(format[fi+1]) {
+            case 'p':
+                var = passage->text;
+                break;
+            case 't':
+                var = passage->translation;
+                break;
+            case 'r':
+                var = passage->reference;
+                break;
+            case '%':
+                var = "%";
+                break;
+            default:
+                return NULL;
+        }
+        offset = strlen(var);
+        result = (char*)realloc(result, size += offset);
+        strcpy( result + ri, var);
+        ri += offset;
+        fi += 2;
+    }
+    result[ri] = 0x0;
+    return result;
+}

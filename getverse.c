@@ -16,9 +16,23 @@
 
 void printUsage() {
     printf(\
-            "Usage: getverse -t <translation> [<reference>]\n"\
+            "Usage:	getverse -t <translation> [-f format] [<reference>]\n"\
+            "	getverse [-h | -?]\n"\
+            "Options:\n"\
+            "	-t	A Bible translation you have installed in SWORD (e.g. KJV)\n"\
+            "	-f	A format string that will determine the format of the output\n"\
+            "		 Defaults to '%%p'\n"\
+            "	-h\n"\
+            "	-?	Display this message and exit"\
             "\n"\
-            "If no reference is supplied, getverse tries to read from stdin.\n");
+            "Format variables:\n"\
+            "	%%p	The passage text\n"\
+            "	%%t	The translation name\n"\
+            "	%%r	The supplied reference\n"\
+            "	%%%%	A literal %% character\n"\
+            "\n"\
+            "If no reference is supplied, getverse tries to read from stdin.\n"\
+          );
 }
 
 char * setReference( int count, char ** words ) {
@@ -72,7 +86,7 @@ int main(int argc, char ** argv) {
                 break;
             case 'h':
             case '?':
-                //printUsage();
+                printUsage();
                 exit(EXIT_SUCCESS);
                 break;
             default:
@@ -100,7 +114,7 @@ int main(int argc, char ** argv) {
                     translation);
             exit(EXIT_FAILURE); break;
         case BOOK_NOT_FOUND:
-            fprintf(stderr, "That book does not exist.\n");
+            fprintf(stderr, "That passage does not exist.\n");
             exit(EXIT_FAILURE); break;
         case CHAPTER_NOT_FOUND:
             fprintf(stderr, "That book doesn't have that many chapters.\n");
@@ -109,7 +123,17 @@ int main(int argc, char ** argv) {
             fprintf(stderr, "That chapter doesn't have that many verses.\n");
             exit(EXIT_FAILURE); break;
         case 0:
-            printf("%s\n", result.text);
+            if( format ) {
+                char * out = formatPassage(format, &result);
+                if(!out) {
+                    fprintf(stderr, "Unknown variable in format string.\n");
+                    exit(EXIT_FAILURE);
+                }
+                printf("%s\n", out);
+                free(out);
+            } else {
+                printf("%s\n", result.text);
+            }
             deletePassage(result);
             exit(EXIT_SUCCESS); break;
         default:
